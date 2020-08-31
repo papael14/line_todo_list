@@ -34,7 +34,7 @@ default: &default
 
 development:
   <<: *default
-  database: line_todo_list
+  database: line_todo_list_development
 
 test:
   <<: *default
