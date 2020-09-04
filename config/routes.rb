@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  post "/callback" => "line_bot#callback"
   get 'line_bot/callback'
   get 'callback/index'
   #resources :callback

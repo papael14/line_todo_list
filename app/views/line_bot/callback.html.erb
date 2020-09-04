@@ -1,2 +1,6 @@
 <h1>LineBot#callback</h1>
 <p>Find me in app/views/line_bot/callback.html.erb</p>
+
+<%= @tasks.each do |task| %>
+  <div><%= "task: #{task.body}"%><div>
+<% end %>
