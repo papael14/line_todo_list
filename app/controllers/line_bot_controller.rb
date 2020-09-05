@@ -20,7 +20,7 @@ class LineBotController < ApplicationController
       # LINE からテキストが送信された場合
       if (event.type === Line::Bot::Event::MessageType::Text)
         # LINE からテキストが送信されたときの処理を記述する
-        line_back = "{ body: :body}を登録しました。"
+
       end
     end
 
