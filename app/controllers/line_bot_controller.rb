@@ -19,8 +19,21 @@ class LineBotController < ApplicationController
     events.each do |event|
       # LINE からテキストが送信された場合
       if (event.type === Line::Bot::Event::MessageType::Text)
-        # LINE からテキストが送信されたときの処理を記述する
+        message = event["message"]["text"]
+        #binding.pry
 
+        # 送信されたメッセージをデータベースに保存
+        Task.create(body: message)
+#        @task = Task.new(
+#          body: message
+#        )
+#        @task.save!
+
+        reply_message = {
+          type: "text",
+          text: "タスク：「#{message}」 を登録しました。" # LINE に返すメッセージを考えてみよう
+        }
+        client.reply_message(event["replyToken"], reply_message)
       end
     end
 
@@ -35,5 +48,9 @@ class LineBotController < ApplicationController
         config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
         config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
       end
+    end
+
+    def task_params
+      params.require(:task).permit(:body)
     end
 end
