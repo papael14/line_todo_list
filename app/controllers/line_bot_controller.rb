@@ -21,17 +21,37 @@ class LineBotController < ApplicationController
       if (event.type === Line::Bot::Event::MessageType::Text)
         message = event["message"]["text"]
         #binding.pry
+        if (message == "一覧")
+          #binding.pry
+          tasks = Task.all
+          text = tasks.map.with_index(1) { |task, index| "#{index}: #{task.body}" }.join("\n")
 
-        # 送信されたメッセージをデータベースに保存
-        Task.create(body: message)
-#        @task = Task.new(
-#          body: message
-#        )
-#        @task.save!
+        elsif (message.include?("削除"))
+          #binding.pry
+#          @num = message.slice(0,2)
+#          @message = Task.where(id: @num)
+#          reply_message = {
+#            type: "text",
+#            text: "タスク#{@num}：「#{@message[0][:body]}」 を削除しました。"
+#          }
+#          Task.find(@num).destroy!
 
+          index = message.gsub(/削除*/, "").strip.to_i
+          tasks = Task.all.to_a
+          task = tasks.find.with_index(1) { |_task, _index| index == _index }
+          task.destroy!
+          text = "タスク #{index}: 「#{task.body}」 を削除しました！"
+
+        else
+          #binding.pry
+          # 送信されたメッセージをデータベースに保存
+          Task.create(body: message)
+
+          text = "タスク：「#{message}」 を登録しました。"
+        end
         reply_message = {
           type: "text",
-          text: "タスク：「#{message}」 を登録しました。" # LINE に返すメッセージを考えてみよう
+          text: text
         }
         client.reply_message(event["replyToken"], reply_message)
       end

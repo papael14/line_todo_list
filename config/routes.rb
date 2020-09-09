@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  resources :tasks, only: [:index, :show]
-  root "tasks#index"
+#  resources :tasks, only: [:index, :show]
+#  root "tasks#index"
   resources :line_bot
   post "/callback" => "line_bot#callback"
 #  get 'tasks/index'
