@@ -20,24 +20,27 @@ class LineBotController < ApplicationController
       # LINE からテキストが送信された場合
       if (event.type === Line::Bot::Event::MessageType::Text)
         message = event["message"]["text"]
+        user_id = event['source']['userId']  #userId取得
         #binding.pry
-        if (message == "一覧")
+        case message
+        when "一覧all"
           #binding.pry
           tasks = Task.all
+          text = tasks.map.with_index(1) { |task, index| "#{index}: #{task.username}-> #{task.body}" }.join("\n")
+
+        when "一覧"
+          #binding.pry
+          #tasks = Task.all
+          tasks = Task.where(user: user_id)
           text = tasks.map.with_index(1) { |task, index| "#{index}: #{task.body}" }.join("\n")
 
-        elsif (message.include?("削除"))
+        when "削除all"
+          tasks = Task.where(user: user_id).destroy_all
+          text = "タスクを全て削除しました！"
+        when /削除+\d/
           #binding.pry
-#          @num = message.slice(0,2)
-#          @message = Task.where(id: @num)
-#          reply_message = {
-#            type: "text",
-#            text: "タスク#{@num}：「#{@message[0][:body]}」 を削除しました。"
-#          }
-#          Task.find(@num).destroy!
-
           index = message.gsub(/削除*/, "").strip.to_i
-          tasks = Task.all.to_a
+          tasks = Task.where(user: user_id).to_a
           task = tasks.find.with_index(1) { |_task, _index| index == _index }
           task.destroy!
           text = "タスク #{index}: 「#{task.body}」 を削除しました！"
@@ -45,7 +48,16 @@ class LineBotController < ApplicationController
         else
           #binding.pry
           # 送信されたメッセージをデータベースに保存
-          Task.create(body: message)
+          case user_id
+          when "U2cd43dd57ad3b24ebba8d436a0233744"
+            user_name = "むすこ"
+          when "U31bec5451166e04c5617b2109181e903"
+            user_name = "ぱぱ"
+          else
+            user_name = "その他"
+          end
+
+          Task.create(user: user_id, body: message, username: user_name)
 
           text = "タスク：「#{message}」 を登録しました。"
         end
