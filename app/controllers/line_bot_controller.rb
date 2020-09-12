@@ -30,7 +30,6 @@ class LineBotController < ApplicationController
 
         when "一覧"
           #binding.pry
-          #tasks = Task.all
           tasks = Task.where(user: user_id)
           text = tasks.map.with_index(1) { |task, index| "#{index}: #{task.body}" }.join("\n")
 
